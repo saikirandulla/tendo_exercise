@@ -8,9 +8,6 @@ fertilizer_mnt = 's3://tendo-customer-data/fertilizer'
 
 from pyspark.sql.functions import col, current_timestamp
 
-# -- consumer_mnt = 's3://tendo-customer-data/consumer'
-# -- purchase_mnt = 's3://tendo-customer-data/purchase'
-# -- fertilizer_mnt = 's3://tendo-customer-data/fertilizer'
 username = spark.sql("SELECT regexp_replace(current_user(), '[^a-zA-Z0-9]', '_')").first()[0]
 
 # Define variables used in code below
@@ -47,25 +44,3 @@ df = (spark.readStream
 # COMMAND ----------
 
 display(avocado_df)
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC Create tables 
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC CREATE TABLE tendo.default.consumer
-# MAGIC (
-# MAGIC   consumer_id INT NOT NULL ,
-# MAGIC   purchase_id INT,
-# MAGIC   graphed_date TIMESTAMP,
-# MAGIC   avocado_bunch_id INT,
-# MAGIC   reporting_year INT,
-# MAGIC   QA_process STRING,
-# MAGIC   billing_provider_sku INT,
-# MAGIC   grocery_store_id INT,
-# MAGIC   price_index INT,
-# MAGIC   CONSTRAINT consumer_pk PRIMARY KEY(consumer_id)
-# MAGIC );
