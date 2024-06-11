@@ -12,21 +12,99 @@ resources:
             notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/avocado_raw_ingest
             source: WORKSPACE
           job_cluster_key: Job_cluster
+          email_notifications:
+            on_failure:
+              - test@tendo.com
         - task_key: ingest_raw_consumer
           notebook_task:
             notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/raw_ingestion/consumer_raw_ingest
             source: WORKSPACE
           job_cluster_key: Job_cluster
-        - task_key: ingest_raw_purchase
-          notebook_task:
-            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/purchase_raw_ingest
-            source: WORKSPACE
-          job_cluster_key: Job_cluster
+          max_retries: 2
+          min_retry_interval_millis: 600000
+          email_notifications:
+            on_failure:
+              - test@tendo.com
         - task_key: ingest_raw_fertilizer
           notebook_task:
             notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/raw_ingestion/fertilizer_raw_ingest
             source: WORKSPACE
           job_cluster_key: Job_cluster
+          email_notifications:
+            on_failure:
+              - test@tendo.com
+        - task_key: ingest_raw_purchase
+          notebook_task:
+            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/purchase_raw_ingest
+            source: WORKSPACE
+          job_cluster_key: Job_cluster
+          email_notifications:
+            on_failure:
+              - test@tendo.com
+        - task_key: load_silver_avocado
+          depends_on:
+            - task_key: ingest_raw_avocado
+          notebook_task:
+            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/load_silver/Load
+              Silver Avocado
+            source: WORKSPACE
+          job_cluster_key: Job_cluster
+          email_notifications:
+            on_failure:
+              - test@tendo.com
+        - task_key: load_silver_consumer
+          depends_on:
+            - task_key: ingest_raw_consumer
+          notebook_task:
+            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/load_silver/Load
+              Silver Consumer
+            source: WORKSPACE
+          job_cluster_key: Job_cluster
+          email_notifications:
+            on_success:
+              - test@tendo.com
+            on_failure:
+              - test@tendo.com
+        - task_key: load_silver_fertilizer
+          depends_on:
+            - task_key: ingest_raw_fertilizer
+          notebook_task:
+            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/load_silver/Load
+              Silver Fertilizer
+            source: WORKSPACE
+          job_cluster_key: Job_cluster
+          email_notifications:
+            on_failure:
+              - test@tendo.com
+        - task_key: load_silver_purchase
+          depends_on:
+            - task_key: ingest_raw_purchase
+          notebook_task:
+            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/load_silver/Load
+              Silver Purchase
+            source: WORKSPACE
+          job_cluster_key: Job_cluster
+          email_notifications:
+            on_failure:
+              - test@tendo.com
+        - task_key: load_gold_output
+          depends_on:
+            - task_key: load_silver_consumer
+            - task_key: load_silver_fertilizer
+            - task_key: load_silver_avocado
+            - task_key: load_silver_purchase
+          notebook_task:
+            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/load_gold/Load
+              to Gold
+            source: WORKSPACE
+          job_cluster_key: Job_cluster
+          email_notifications:
+            on_start:
+              - test@gmail.com
+            on_success:
+              - test@gmail.com
+            on_failure:
+              - test@gmail.com
       job_clusters:
         - job_cluster_key: Job_cluster
           new_cluster:
