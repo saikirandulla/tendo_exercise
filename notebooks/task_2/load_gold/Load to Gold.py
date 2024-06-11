@@ -35,10 +35,14 @@ latest_avocado_df = avocado_df.filter(avocado_df.load_timestamp == avocado_df.se
 latest_fertilizer_df = fertilizer_df.filter(fertilizer_df.load_timestamp == fertilizer_df.selectExpr("max(load_timestamp)").collect()[0][0])
 latest_consumer_df = consumer_df.filter(consumer_df.load_timestamp == consumer_df.selectExpr("max(load_timestamp)").collect()[0][0])
 
+
+latest_consumer_df = latest_consumer_df.withColumn("days_picked", datediff(latest_consumer_df["picked_date"], latest_consumer_df["born_date"]))\
+                                       .withColumn("days_sold", datediff(avocado_df["sold_date"], avocado_df["picked_date"]))
+
 # Join the latest DataFrames and select the desired columns
 output_df_latest = latest_purchase_df.join(latest_avocado_df, on=['consumer_id', 'purchase_id']) 
-                              .join(latest_fertilizer_df, on=['consumer_id', 'purchase_id'], how='outer') 
-                              .join(latest_consumer_df, on=['consumer_id'], how='outer') 
+                              .join(latest_fertilizer_df, on=['consumer_id', 'purchase_id']) 
+                              .join(latest_consumer_df, on=['consumer_id']) 
                               .select('consumer_id', 'sex', 'age', 'days_sold', 'ripe_index_when_picked', 'days_picked', 'type')
                               .dropDuplicates()
                               .withColumn('load_timestamp', current_timestamp()) 

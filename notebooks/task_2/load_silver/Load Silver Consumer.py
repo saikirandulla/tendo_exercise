@@ -116,17 +116,13 @@ from pyspark.sql.functions import current_date, lit, row_number, col
 from pyspark.sql.window import Window
 
 def upsert_to_silver_table(existing_silver_table: DataFrame, latest_batch: DataFrame) -> DataFrame:
-    # Add surrogate key column to existing_silver_table
-    existing_silver_table = existing_silver_table.withColumn("surrogate_key", row_number().over(Window.orderBy("consumer_id")))
-
-    # Add surrogate key column to latest_batch
-    latest_batch = latest_batch.withColumn("surrogate_key", lit(None))
+  
 
     # Identify records to insert
-    records_to_insert = latest_batch.join(existing_silver_table, ["consumer_id", "sex", "ethnicity", "race", "age", "load_time", "effective_from", "effective_to"], "left_anti")
+    records_to_insert = silver_latest_valid_records.join(existing_silver_table, ["consumer_id", "sex", "ethnicity", "race", "age", "load_time", "effective_from", "effective_to"], "left_anti")
 
     # Identify records to update
-    records_to_update = latest_batch.join(existing_silver_table, ["consumer_id", "sex", "ethnicity", "race", "age", "load_time", "effective_from", "effective_to"], "inner")
+    records_to_update = silver_latest_valid_records.join(existing_silver_table, ["consumer_id", "sex", "ethnicity", "race", "age", "load_time", "effective_from", "effective_to"], "inner")
 
     # Update the effective_to column of old records to yesterday's date
     updated_records = existing_silver_table.withColumn("effective_to", current_date() - lit(1))
