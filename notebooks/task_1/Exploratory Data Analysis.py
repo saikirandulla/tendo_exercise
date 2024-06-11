@@ -124,7 +124,7 @@ consumer_df.select('consumer_id').distinct().orderBy("consumer_id").show()
 output_df = purchase_df.join(avocado_df, on = ['consumer_id', 'purchase_id', 'avocado_bunch_id'], how='outer')\
                       .join(fertilizer_df, on = ['consumer_id', 'purchase_id'], how='outer')\
                       .join(consumer_df, on = ['consumer_id'], how='outer')\
-                      .select('consumer_id', 'purchase_id', 'avocado_bunch_id', 'sex','age', 'days_sold', 'ripe_index_when_picked','days_picked', 'type' ).orderBy('consumer_id').distinct()
+                      .select('consumer_id', 'sex','age', 'days_sold', 'ripe_index_when_picked','days_picked', 'type' ).orderBy('consumer_id').distinct()
 
 # COMMAND ----------
 
