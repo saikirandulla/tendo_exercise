@@ -1,0 +1,49 @@
+resources:
+  jobs:
+    Task_2_ETL_Load:
+      name: Task 2 ETL Load
+      schedule:
+        quartz_cron_expression: 29 0 7 ? * Mon
+        timezone_id: UTC
+        pause_status: UNPAUSED
+      tasks:
+        - task_key: ingest_raw_avocado
+          notebook_task:
+            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/avocado_raw_ingest
+            source: WORKSPACE
+          job_cluster_key: Job_cluster
+        - task_key: ingest_raw_consumer
+          notebook_task:
+            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/raw_ingestion/consumer_raw_ingest
+            source: WORKSPACE
+          job_cluster_key: Job_cluster
+        - task_key: ingest_raw_purchase
+          notebook_task:
+            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/purchase_raw_ingest
+            source: WORKSPACE
+          job_cluster_key: Job_cluster
+        - task_key: ingest_raw_fertilizer
+          notebook_task:
+            notebook_path: /Repos/saikiran177@gmail.com/tendo_exercise/notebooks/task_2/raw_ingestion/fertilizer_raw_ingest
+            source: WORKSPACE
+          job_cluster_key: Job_cluster
+      job_clusters:
+        - job_cluster_key: Job_cluster
+          new_cluster:
+            cluster_name: ""
+            spark_version: 14.3.x-scala2.12
+            aws_attributes:
+              first_on_demand: 1
+              availability: SPOT_WITH_FALLBACK
+              zone_id: us-west-2d
+              spot_bid_price_percent: 100
+              ebs_volume_count: 0
+            node_type_id: r6id.xlarge
+            spark_env_vars:
+              PYSPARK_PYTHON: /databricks/python3/bin/python3
+            enable_elastic_disk: false
+            data_security_mode: SINGLE_USER
+            runtime_engine: PHOTON
+            num_workers: 8
+      queue:
+        enabled: true
